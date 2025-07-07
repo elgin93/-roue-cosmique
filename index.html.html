@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roue Cosmique - Tentez votre chance !</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a0033 25%, #2d1b69 50%, #8b5cf6 75%, #c084fc 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .cosmic-bg {
+            background: radial-gradient(circle at 20% 80%, #1a0033 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, #2d1b69 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, #8b5cf6 0%, transparent 50%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .cosmic-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #8b5cf6, #c084fc, #fbbf24, #8b5cf6);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.8), 0 0 80px rgba(139, 92, 246, 0.4);
+            transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: right bottom;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-align: center;
+            line-height: 1.2;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        .wheel-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 40px solid #fbbf24;
+            z-index: 10;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8));
+        }
+        
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #8b5cf6, #c084fc);
+            border-radius: 50%;
+            z-index: 5;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+        }
+        
+        .spin-button {
+            background: linear-gradient(45deg, #8b5cf6, #c084fc);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .spin-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+        }
+        
+        .spin-button:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+        
+        .form-container {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+        
+        .cosmic-input {
+            background: rgba(30, 30, 30, 0.8);
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .cosmic-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+        
+        .cosmic-button {
+            background: linear-gradient(45deg, #8b5cf6, #c084fc);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .cosmic-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a0033, #2d1b69);
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(139, 92, 246, 0.8);
+            border-radius: 50%;
+            animation: float 6s linear infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .result-display {
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem auto;
+            max-width: 400px;
+            text-align: center;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .wheel-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .cosmic-title {
+                font-size: 2rem;
+            }
+            
+            .wheel-segment {
+                font-size: 10px;
+            }
+            
+            .form-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+        
+        .segment-1 { background: linear-gradient(45deg, #374151, #4b5563); }
+        .segment-2 { background: linear-gradient(45deg, #059669, #10b981); }
+        .segment-3 { background: linear-gradient(45deg, #0891b2, #06b6d4); }
+        .segment-4 { background: linear-gradient(45deg, #7c3aed, #8b5cf6); }
+        .segment-5 { background: linear-gradient(45deg, #dc2626, #ef4444); }
+        .segment-6 { background: linear-gradient(45deg, #ea580c, #f97316); }
+        .segment-7 { background: linear-gradient(45deg, #9333ea, #a855f7); }
+        .segment-8 { background: linear-gradient(45deg, #0369a1, #0284c7); }
+    </style>
+</head>
+<body>
+    <div class="cosmic-bg"></div>
+    <div class="stars"></div>
+    <div class="particles"></div>
+    
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="cosmic-title">ROUE COSMIQUE</h1>
+        
+        <div id="form-section" class="form-container">
+            <h2 class="text-2xl font-bold text-white text-center mb-6">Tentez votre chance !</h2>
+            <form id="userForm" class="space-y-4">
+                <div>
+                    <label class="block text-white font-semibold mb-2">Prénom *</label>
+                    <input type="text" id="prenom" class="cosmic-input w-full" required>
+                </div>
+                <div>
+                    <label class="block text-white font-semibold mb-2">Nom *</label>
+                    <input type="text" id="nom" class="cosmic-input w-full" required>
+                </div>
+                <div>
+                    <label class="block text-white font-semibold mb-2">Email *</label>
+                    <input type="email" id="email" class="cosmic-input w-full" required>
+                </div>
+                <button type="submit" class="cosmic-button w-full">Valider et jouer</button>
+            </form>
+        </div>
+        
+        <div id="wheel-section" class="text-center" style="display: none;">
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-segment segment-1" style="transform: rotate(0deg);">
+                        <span>Rien à<br>gagner</span>
+                    </div>
+                    <div class="wheel-segment segment-2" style="transform: rotate(45deg);">
+                        <span>Réduction<br>-5%</span>
+                    </div>
+                    <div class="wheel-segment segment-3" style="transform: rotate(90deg);">
+                        <span>Réduction<br>-10%</span>
+                    </div>
+                    <div class="wheel-segment segment-4" style="transform: rotate(135deg);">
+                        <span>Réduction<br>-20%</span>
+                    </div>
+                    <div class="wheel-segment segment-5" style="transform: rotate(180deg);">
+                        <span>Réduction<br>-50%</span>
+                    </div>
+                    <div class="wheel-segment segment-6" style="transform: rotate(225deg);">
+                        <span>Ticket<br>Party Bus</span>
+                    </div>
+                    <div class="wheel-segment segment-7" style="transform: rotate(270deg);">
+                        <span>Entrée<br>Boîte de Nuit</span>
+                    </div>
+                    <div class="wheel-segment segment-8" style="transform: rotate(315deg);">
+                        <span>Cadeau<br>Surprise Bateau</span>
+                    </div>
+                </div>
+                <div class="wheel-center"></div>
+            </div>
+            <button id="spinButton" class="spin-button mt-8">
+                <i class="fas fa-star mr-2"></i>FAIRE TOURNER<i class="fas fa-star ml-2"></i>
+            </button>
+        </div>
+        
+        <div id="result-section" class="result-display">
+            <h3 class="text-2xl font-bold mb-4">Résultat</h3>
+            <div id="result-text" class="text-xl"></div>
+        </div>
+    </div>
+    
+    <!-- Modal de bienvenue -->
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-3xl font-bold text-white mb-4">🌟 Bienvenue <span id="welcomeName"></span> ! 🌟</h2>
+            <p class="text-white mb-6">Prêt(e) pour votre chance cosmique ?</p>
+            <button id="startButton" class="cosmic-button">C'est parti !</button>
+        </div>
+    </div>
+    
+    <!-- Modal de résultat -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Résultat 🎉</h2>
+            <div id="finalResult" class="text-xl text-white mb-6"></div>
+            <button id="closeResult" class="cosmic-button">Fermer</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let userData = {};
+        let hasSpun = false;
+        let spinning = false;
+        
+        // Segments de la roue avec leurs probabilités
+        const segments = [
+            { name: "Rien à gagner", probability: 41, angle: 0 },
+            { name: "Réduction -5%", probability: 18, angle: 45 },
+            { name: "Réduction -10%", probability: 15, angle: 90 },
+            { name: "Réduction -20%", probability: 10, angle: 135 },
+            { name: "Réduction -50%", probability: 5, angle: 180 },
+            { name: "Ticket Party Bus", probability: 4, angle: 225 },
+            { name: "Entrée Boîte de Nuit", probability: 4, angle: 270 },
+            { name: "Cadeau Surprise Bateau", probability: 3, angle: 315 }
+        ];
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            createParticles();
+            checkIfAlreadyPlayed();
+            setupEventListeners();
+        });
+        
+        // Vérifier si l'utilisateur a déjà joué
+        function checkIfAlreadyPlayed() {
+            const hasPlayed = localStorage.getItem('roueCosmiqueHasPlayed');
+            if (hasPlayed) {
+                document.getElementById('form-section').innerHTML = `
+                    <div class="text-center">
+                        <h2 class="text-2xl font-bold text-white mb-4">🌟 Merci d'avoir participé ! 🌟</h2>
+                        <p class="text-white">Vous avez déjà tenté votre chance.</p>
+                        <p class="text-white">Revenez demain pour une nouvelle opportunité !</p>
+                    </div>
+                `;
+                return;
+            }
+        }
+        
+        // Configuration des événements
+        function setupEventListeners() {
+            document.getElementById('userForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('spinButton').addEventListener('click', spinWheel);
+            document.getElementById('startButton').addEventListener('click', closeWelcomeModal);
+            document.getElementById('closeResult').addEventListener('click', closeResultModal);
+        }
+        
+        // Gestion du formulaire
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            userData = {
+                prenom: document.getElementById('prenom').value,
+                nom: document.getElementById('nom').value,
+                email: document.getElementById('email').value
+            };
+            
+            document.getElementById('welcomeName').textContent = userData.prenom;
+            document.getElementById('welcomeModal').style.display = 'block';
+            
+            playSound('welcome');
+        }
+        
+        // Fermer modal de bienvenue
+        function closeWelcomeModal() {
+            document.getElementById('welcomeModal').style.display = 'none';
+            document.getElementById('form-section').style.display = 'none';
+            document.getElementById('wheel-section').style.display = 'block';
+        }
+        
+        // Faire tourner la roue
+        function spinWheel() {
+            if (spinning || hasSpun) return;
+            
+            spinning = true;
+            hasSpun = true;
+            document.getElementById('spinButton').disabled = true;
+            
+            playSound('spin');
+            
+            const result = getRandomResult();
+            const finalAngle = calculateFinalAngle(result);
+            const spinAmount = 1440 + finalAngle; // 4 tours complets + angle final
+            
+            const wheel = document.getElementById('wheel');
+            wheel.style.transform = `rotate(${spinAmount}deg)`;
+            
+            setTimeout(() => {
+                spinning = false;
+                showResult(result);
+                localStorage.setItem('roueCosmiqueHasPlayed', 'true');
+                sendNotification(result);
+            }, 4000);
+        }
+        
+        // Calculer le résultat selon les probabilités
+        function getRandomResult() {
+            const random = Math.random() * 100;
+            let cumulative = 0;
+            
+            for (let segment of segments) {
+                cumulative += segment.probability;
+                if (random <= cumulative) {
+                    return segment;
+                }
+            }
+            
+            return segments[0]; // Fallback
+        }
+        
+        // Calculer l'angle final pour que la roue s'arrête sur le bon segment
+        function calculateFinalAngle(result) {
+            // Ajustement pour que l'angle corresponde à la position du curseur
+            const segmentAngle = result.angle;
+            const pointerPosition = 0; // Le curseur est en haut (0°)
+            
+            // Calculer l'angle pour que le segment soit sous le curseur
+            let finalAngle = 360 - segmentAngle + pointerPosition;
+            
+            // Ajouter une petite variation aléatoire dans le segment
+            const segmentSize = 360 / segments.length;
+            const randomOffset = (Math.random() - 0.5) * segmentSize * 0.8;
+            finalAngle += randomOffset;
+            
+            // Normaliser l'angle
+            finalAngle = finalAngle % 360;
+            if (finalAngle < 0) finalAngle += 360;
+            
+            return finalAngle;
+        }
+        
+        // Afficher le résultat
+        function showResult(result) {
+            let message = '';
+            let emoji = '';
+            
+            switch (result.name) {
+                case 'Rien à gagner':
+                    message = `Pas de chance cette fois ${userData.prenom} ! Merci d'avoir participé !`;
+                    emoji = '😊';
+                    break;
+                case 'Réduction -5%':
+                    message = `Bravo ${userData.prenom} ! Vous avez gagné une réduction de 5% !`;
+                    emoji = '🎉';
+                    break;
+                case 'Réduction -10%':
+                    message = `Félicitations ${userData.prenom} ! Vous avez gagné une réduction de 10% !`;
+                    emoji = '🎊';
+                    break;
+                case 'Réduction -20%':
+                    message = `Excellent ${userData.prenom} ! Vous avez gagné une réduction de 20% !`;
+                    emoji = '🏆';
+                    break;
+                case 'Réduction -50%':
+                    message = `INCROYABLE ${userData.prenom} ! Vous avez gagné une réduction de 50% !`;
+                    emoji = '🔥';
+                    break;
+                case 'Ticket Party Bus':
+                    message = `WAOUH ${userData.prenom} ! Vous avez gagné un Ticket Party Bus !`;
+                    emoji = '🚌';
+                    break;
+                case 'Entrée Boîte de Nuit':
+                    message = `FANTASTIQUE ${userData.prenom} ! Vous avez gagné une Entrée Boîte de Nuit !`;
+                    emoji = '🌙';
+                    break;
+                case 'Cadeau Surprise Bateau':
+                    message = `EXCEPTIONNEL ${userData.prenom} ! Vous avez gagné un Cadeau Surprise sur le Bateau !`;
+                    emoji = '🛥️';
+                    break;
+            }
+            
+            document.getElementById('finalResult').innerHTML = `
+                <div class="text-4xl mb-4">${emoji}</div>
+                <div class="text-lg">${message}</div>
+            `;
+            
+            document.getElementById('resultModal').style.display = 'block';
+            
+            if (result.name !== 'Rien à gagner') {
+                playSound('win');
+            } else {
+                playSound('lose');
+            }
+        }
+        
+        // Fermer modal de résultat
+        function closeResultModal() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
+        
+        // Envoyer notification email
+        function sendNotification(result) {
+            const emailData = {
+                to: 'mchergui08@gmail.com',
+                subject: '🌌 Nouvelle participation - Roue Cosmique !',
+                body: `
+🎯 NOUVELLE PARTICIPATION !
+
+👤 PARTICIPANT :
+Prénom : ${userData.prenom}
+Nom : ${userData.nom}
+Email : ${userData.email}
+
+🎪 RÉSULTAT :
+${result.name}
+
+📊 DÉTAILS :
+Date : ${new Date().toLocaleString('fr-FR')}
+Navigateur : ${navigator.userAgent}
+Probabilité : ${result.probability}%
+
+🌟 Roue Cosmique - Système automatique
+                `
+            };
+            
+            // Simulation d'envoi d'email (en production, connecter à un service d'email)
+            console.log('Email envoyé:', emailData);
+            
+            // Vous pouvez remplacer par un service d'email comme EmailJS
+            // emailjs.send('service_id', 'template_id', emailData);
+        }
+        
+        // Créer les étoiles
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Créer les particules
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Jouer des sons
+        function playSound(type) {
+            // Simulation des sons (en production, ajouter de vrais fichiers audio)
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            switch (type) {
+                case 'welcome':
+                    playTone(audioContext, 440, 0.3, 0.5);
+                    break;
+                case 'spin':
+                    playTone(audioContext, 220, 1, 0.3);
+                    break;
+                case 'win':
+                    playTone(audioContext, 880, 0.5, 0.7);
+                    setTimeout(() => playTone(audioContext, 1100, 0.5, 0.7), 200);
+                    break;
+                case 'lose':
+                    playTone(audioContext, 150, 0.8, 0.3);
+                    break;
+            }
+        }
+        
+        // Générer un ton
+        function playTone(audioContext, frequency, duration, volume) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+        
+        // Fermer les modals en cliquant à l'extérieur
+        window.onclick = function(event) {
+            const welcomeModal = document.getElementById('welcomeModal');
+            const resultModal = document.getElementById('resultModal');
+            
+            if (event.target === welcomeModal) {
+                welcomeModal.style.display = 'none';
+            }
+            if (event.target === resultModal) {
+                resultModal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDmWRijF4azt8HsJL8Ta7q%2BAPU4XeLnUfX36FVVFSGp%2BI4OYGQHGVbfe3Q05C8m%2BA8AVJuuLjk6tbBNXSvS02WA64tUPTMkMqONDhbU3D6UI0q%2BKmWR37%2B8Fs7pj6xNNL7IqzC%2B5BHAbTAcTAcYXSww%2B6slGYbp4ZJi63E%2BiPTp%2Bt0u1JYH8Sujih1DA9Pmz49nWo7dcfeRHvqO61zGAYDlecQVIhLX2pRwyehlOpBYuBqyuBsl90zHOdXLevBWVwLwgzQsABTrxcCH2mRS9dzTmKhaffv6ClpJ3HuV9MVrbf7qPcloPNQhyl5jg7zRBnWAdepIR4B%2B6nyjd9hcAXNLvZLPJlfz9%2Fum19orb0XHkw1Ostirth8VUVf0XWMCiXP%2Bk%2Fn6VMCw4XK8MLghKpqKbjiFLz98HjECfy5nI7xLpVnW4kfRE1ItCZQB6ZA9EHV8kOCaFmhwBUrJbbhEZV76A5qOciWRWRd8VyYhwblq8R2xui9EK6cSC%2FzFulIz8qG3w7MgI3xr4NRoYLX%2B9nFxY%3D";
+        window.__genspark_locale = "fr-FR";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDmWRijF4azt8HsJL8Ta7q+APU4XeLnUfX36FVVFSGp+I4OYGQHGVbfe3Q05C8m+A8AVJuuLjk6tbBNXSvS02WA64tUPTMkMqONDhbU3D6UI0q+KmWR37+8Fs7pj6xNNL7IqzC+5BHAbTAcTAcYXSww+6slGYbp4ZJi63E+iPTp+t0u1JYH8Sujih1DA9Pmz49nWo7dcfeRHvqO61zGAYDlecQVIhLX2pRwyehlOpBYuBqyuBsl90zHOdXLevBWVwLwgzQsABTrxcCH2mRS9dzTmKhaffv6ClpJ3HuV9MVrbf7qPcloPNQhyl5jg7zRBnWAdepIR4B+6nyjd9hcAXNLvZLPJlfz9/um19orb0XHkw1Ostirth8VUVf0XWMCiXP+k/n6VMCw4XK8MLghKpqKbjiFLz98HjECfy5nI7xLpVnW4kfRE1ItCZQB6ZA9EHV8kOCaFmhwBUrJbbhEZV76A5qOciWRWRd8VyYhwblq8R2xui9EK6cSC/zFulIz8qG3w7MgI3xr4NRoYLX+9nFxY=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    
